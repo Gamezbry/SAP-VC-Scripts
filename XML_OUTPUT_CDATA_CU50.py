@@ -14,13 +14,14 @@ import time
 # Conexión a SAP / SAP connection
 
 Excel_File = filedialog.askopenfilename(title="Select Excel File Template",filetypes=(("Excel files", "*.xlsx"), ("All files", "*.*")))
-wb = openpyxl.load_workbook(Excel_File)
+wb = openpyxl.load_workbook(Excel_File, data_only=True)
 VariantROW = 2
 
 VariantCOLCH = -1
 VariantCOLVAL = 0
 sheet = wb['XML_Output']
-XML_File = filedialog.askopenfilename(title="Select XML File",filetypes=(("XML files", "*.xml"), ("All files", "*.*")))
+ecat_sheet = wb['ECAT_CHARS']
+XML_File = filedialog.askdirectory(title="Select XML File")
 start = time.time()
 files = 0
 for archivo in os.listdir(XML_File):
@@ -76,6 +77,7 @@ wb.save(Excel_File)
 CisticROW = 2
 CisticColumn = 1
 ValueColumn = 2
+ecat_cystic = ""
 while sheet.cell(CisticROW,CisticColumn) is not None:
      # Conexión a SAP / SAP connection
     sap_gui_auto = win32com.client.GetObject("SAPGUI")
@@ -178,6 +180,17 @@ while sheet.cell(CisticROW,CisticColumn) is not None:
                             except: 
                                 pass
                             tab +=1
+
+                            #Try-Except block for Cystics not setup in SAP
+                            try:
+                                ecat_cystic = ecat_sheet.cell(row=1,column=2).value
+                                if sheet.cell(row=CisticROW,column=CisticColumn).value in ecat_cystic:
+                                    CisticROW += 1
+                                    tab -=1
+
+                            except:
+                                pass
+
                         
                         elif tab == Num_Tab:
                             tabs()
@@ -234,4 +247,5 @@ while sheet.cell(CisticROW,CisticColumn) is not None:
                                 tab = Num_Tab
                             CisticROW += 1
 
+                        
 
