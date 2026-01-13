@@ -20,7 +20,7 @@ VariantROW = 2
 VariantCOLCH = -1
 VariantCOLVAL = 0
 sheet = wb['XML_Output']
-XML_File = filedialog.askdirectory(title="Select XML File")
+XML_File = filedialog.askopenfilename(title="Select XML File",filetypes=(("XML files", "*.xml"), ("All files", "*.*")))
 start = time.time()
 files = 0
 for archivo in os.listdir(XML_File):
@@ -163,6 +163,8 @@ while sheet.cell(CisticROW,CisticColumn) is not None:
                     if sheet.cell(row=CisticROW,column=ValueColumn).value is not None:
                         if tab < Num_Tab:
                             tabs()
+
+                            #Try-Except block for not displayed chars under tab if
                             try:
                                 Result1 = ""
                                 Result2 = "" 
@@ -179,6 +181,8 @@ while sheet.cell(CisticROW,CisticColumn) is not None:
                         
                         elif tab == Num_Tab:
                             tabs()
+                            
+                            #Try-Except block for not displayed chars under tab if
                             try:
                                 Result1 = ""
                                 Result2 = "" 
@@ -191,13 +195,33 @@ while sheet.cell(CisticROW,CisticColumn) is not None:
                                 pass
                             tab =1  
 
+
+                        #Try-Except block for chars string found under Excel Chars with value
                         try:
                             Select_FoundValue()
-                            session.findById("wnd[0]").sendVKey (0)
+                            #session.findById("wnd[0]").sendVKey (0)
                         
                         except:
                             pass
 
+
+                        #Try-Except block for chars found in another tab
+                        try:
+                            
+                            Result1 = ""
+                            Result2 = "" 
+                            Result1 = session.findById("wnd[1]/usr/txtMESSTXT1").text
+                            Result2 = session.findById("wnd[1]/usr/txtMESSTXT2").text
+                            Result = Result1 + " " + Result2
+                            if "Not Displayed" not in Result:
+                                session.findById("wnd[0]").sendVKey (0)
+                            break
+                                       
+                        except:
+                            pass
+
+                        
+                        #Try-Except block for enter values in char or close window when Char is not found
                         try:
                             #Close window where it was not found CHAR
                             session.findById("wnd[1]/tbar[0]/btn[0]").press ()
